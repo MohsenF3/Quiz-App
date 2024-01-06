@@ -1,0 +1,83 @@
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+  -webkit-appearance: textfield;
+}
+
+.anim {
+  animation-name: myAnim;
+  animation-duration: 3s;
+  animation-timing-function: ease;
+  animation-iteration-count: 1;
+  animation-direction: normal;
+  animation-fill-mode: backwards;
+}
+
+.anim:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.anim:nth-child(2) {
+  animation-delay: 1s;
+}
+
+.anim:nth-child(3) {
+  animation-delay: 2s;
+}
+
+@keyframes myAnim {
+  0% {
+    animation-timing-function: ease-in;
+    opacity: 1;
+    transform: translateX(-500px);
+  }
+
+  24% {
+    opacity: 1;
+  }
+
+  40% {
+    animation-timing-function: ease-in;
+    transform: translateX(-26px);
+  }
+
+  65% {
+    animation-timing-function: ease-in;
+    transform: translateX(-13px);
+  }
+
+  82% {
+    animation-timing-function: ease-in;
+    transform: translateX(-6.5px);
+  }
+
+  93% {
+    animation-timing-function: ease-in;
+    transform: translateX(-4px);
+  }
+
+  25%,
+  55%,
+  75%,
+  87%,
+  98% {
+    animation-timing-function: ease-out;
+    transform: translateX(0px);
+  }
+
+  100% {
+    animation-timing-function: ease-out;
+    opacity: 1;
+    transform: translateX(0px);
+  }
+}
