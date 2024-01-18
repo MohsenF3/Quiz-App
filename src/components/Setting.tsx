@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Input, Spinner } from "@material-tailwind/react";
+import { Button, Input } from "@material-tailwind/react";
 
 import SelectItems from "./SelectItems";
 import useAxios from "../hooks/useAxios";
 import { changeAmount, selectValue } from "../slices/quizSlice";
 import { ResponseForTriviaCategory } from "../models/quizModels";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
+import Loading from "./Loading";
 
 const Setting: React.FC = () => {
   // State to manage the number of questions
@@ -49,11 +50,7 @@ const Setting: React.FC = () => {
   };
 
   if (loading) {
-    return (
-      <div className="w-full h-full flex items-center justify-center">
-        <Spinner color="blue" className="h-16 w-16" />
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {
