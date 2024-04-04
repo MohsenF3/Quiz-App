@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { decode } from "html-entities";
-import { useNavigate } from "react-router-dom";
-import { Button, Spinner } from "@material-tailwind/react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@material-tailwind/react";
 
 import useAxios from "../hooks/useAxios";
 import { changeScore, selectValue } from "../slices/quizSlice";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { ResponseForQuestions } from "../models/quizModels";
+import Loading from "./Loading";
 
 const getRandomInt = (max: number): number => Math.floor(Math.random() * max);
 
@@ -19,7 +20,7 @@ const Questions: React.FC = () => {
   const dispatch = useAppDispatch();
 
   let api = `/api.php?amount=${amount}&category=${category}&difficulty=${diff}&type=${type}`;
-  const { data, loading } = useAxios<ResponseForQuestions>(api);
+  const { data, loading, error } = useAxios<ResponseForQuestions>(api);
 
   useEffect(() => {
     if (data?.results.length) {
@@ -65,9 +66,14 @@ const Questions: React.FC = () => {
   };
 
   if (loading) {
+    return <Loading />;
+  }
+
+  if (error) {
     return (
       <div className="w-full h-full flex items-center justify-center">
-        <Spinner color="blue" className="h-16 w-16" />
+        <h1>Something Went Wrong!</h1>
+        <Link to="/setting">Go To Setting</Link>
       </div>
     );
   }
