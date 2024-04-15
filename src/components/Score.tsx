@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 
-import { resetState, selectValue } from "../slices/quizSlice";
+import { resetState, selectValue } from "../lib/slices/quizSlice";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 
 const Score: React.FC = () => {

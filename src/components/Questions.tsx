@@ -1,26 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { decode } from "html-entities";
 import { Link, useNavigate } from "react-router-dom";
+
+import useAxios from "../lib/hooks/useAxios";
+import { changeScore, selectValue } from "../lib/slices/quizSlice";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { ResponseForQuestions } from "../lib/models/quizModels";
+import Loading from "./Loading";
+import { getRandomInt } from "../lib/utils";
+import Question from "./Question";
 import { Button } from "@material-tailwind/react";
 
-import useAxios from "../hooks/useAxios";
-import { changeScore, selectValue } from "../slices/quizSlice";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { ResponseForQuestions } from "../models/quizModels";
-import Loading from "./Loading";
-
-const getRandomInt = (max: number): number => Math.floor(Math.random() * max);
-
 const Questions: React.FC = () => {
-  const [currentQuestion, setCurrentQestion] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
   const [options, setOptions] = useState<string[]>([]);
+  const navigate = useNavigate();
 
   const { type, diff, category, amount } = useAppSelector(selectValue);
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
+  // fetch data
   let api = `/api.php?amount=${amount}&category=${category}&difficulty=${diff}&type=${type}`;
   const { data, loading, error } = useAxios<ResponseForQuestions>(api);
+
 
   useEffect(() => {
     if (data?.results.length) {
@@ -47,23 +49,26 @@ const Questions: React.FC = () => {
     }
   }, [data, currentQuestion]);
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (currentQuestion + 1 === data?.results.length) {
-      // Navigate to the score page when all questions are answered
-      navigate("/score");
-    }
+  const onClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      if (currentQuestion + 1 === data?.results.length) {
+        // Navigate to the score page when all questions are answered
+        navigate("/score");
+      }
 
-    // Check if the clicked option is the correct answer and update the score
-    if (
-      event.currentTarget.textContent ===
-      data?.results[currentQuestion].correct_answer
-    ) {
-      dispatch(changeScore());
-    }
+      // Check if the clicked option is the correct answer and update the score
+      if (
+        event.currentTarget.textContent ===
+        data?.results[currentQuestion].correct_answer
+      ) {
+        dispatch(changeScore());
+      }
 
-    // Move to the next question
-    setCurrentQestion((pre) => pre + 1);
-  };
+      // Move to the next question
+      setCurrentQuestion((pre) => pre + 1);
+    },
+    [currentQuestion]
+  );
 
   if (loading) {
     return <Loading />;
@@ -71,16 +76,18 @@ const Questions: React.FC = () => {
 
   if (error) {
     return (
-      <div className="w-full h-full flex items-center justify-center">
-        <h1>Something Went Wrong!</h1>
-        <Link to="/setting">Go To Setting</Link>
+      <div className="w-full h-full flex flex-col gap-5 items-center justify-center">
+        <h1 className="text-2xl font-medium">Something Went Wrong!</h1>
+        <Button placeholder="" color="brown">
+          <Link to="/setting">Go To Setting</Link>
+        </Button>
       </div>
     );
   }
 
   return (
     <div>
-      {data && (
+      {!!data && (
         <>
           <h1 className="text-center">
             Question : {currentQuestion + 1} / {data.results.length}
@@ -89,19 +96,7 @@ const Questions: React.FC = () => {
             <p className="mt-5">
               {decode(data.results[currentQuestion].question)}
             </p>
-            <div className="grid grid-cols-2  gap-4 mt-7">
-              {options.map((option) => (
-                <Button
-                  placeholder={undefined}
-                  key={option}
-                  color="amber"
-                  className="text-white"
-                  onClick={handleClick}
-                >
-                  {decode(option)}
-                </Button>
-              ))}
-            </div>
+            <Question options={options} handleClick={onClick} />
           </div>
         </>
       )}

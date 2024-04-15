@@ -3,48 +3,32 @@ import { useNavigate } from "react-router-dom";
 import { Button, Input } from "@material-tailwind/react";
 
 import SelectItems from "./SelectItems";
-import useAxios from "../hooks/useAxios";
-import { changeAmount, selectValue } from "../slices/quizSlice";
-import { ResponseForTriviaCategory } from "../models/quizModels";
+import useAxios from "../lib/hooks/useAxios";
+import { changeAmount, selectValue } from "../lib/slices/quizSlice";
+import { ResponseForTriviaCategory } from "../lib/models/quizModels";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import Loading from "./Loading";
+import { difficultyOptions, typeOptions } from "../lib/placeholder";
 
 const Setting: React.FC = () => {
-  // State to manage the number of questions
   const [number, setNumber] = useState("10");
-  // Show error if user attempts to proceed without filling in all required settings
   const [err, setErr] = useState("");
+  const navigate = useNavigate();
+
+  const { type, diff, category, amount } = useAppSelector(selectValue);
+  const dispatch = useAppDispatch();
 
   // Fetch trivia categories data
   const { data, loading, error } =
     useAxios<ResponseForTriviaCategory>("/api_category.php");
 
-  const { type, diff, category, amount } = useAppSelector(selectValue);
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-
-  // Options for difficulty
-  const difficultyOptions = [
-    { id: "easy", name: "Easy" },
-    { id: "medium", name: "Medium" },
-    { id: "hard", name: "Hard" },
-  ];
-
-  // Options for question type
-  const typeOptions = [
-    { id: "multiple", name: "Multyple Choice" },
-    { id: "boolean", name: "True / False" },
-  ];
-
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     dispatch(changeAmount(number));
 
-    // Navigate to the questions page if all required settings are available
     if (type && diff && category && amount) {
       navigate("/questions");
     } else {
-      // Set error message
       setErr("Please fill in all the required settings.");
     }
   };
@@ -61,6 +45,9 @@ const Setting: React.FC = () => {
     );
   }
 
+  const changeNumber = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setNumber(event.target.value);
+
   return (
     <div className="w-full h-full">
       <h1 className="text-3xl font-bold text-center text-white">
@@ -71,22 +58,24 @@ const Setting: React.FC = () => {
         <div className="flex flex-col gap-5">
           {/* Select component for choosing trivia category */}
           <SelectItems options={data?.trivia_categories} label="Category" />
+
           {/* Select component for choosing difficulty level */}
           <SelectItems options={difficultyOptions} label="Difficulty" />
+
           {/* Select component for choosing question type */}
           <SelectItems options={typeOptions} label="Type" />
+
           {/* Input for specifying the number of questions */}
           <Input
             crossOrigin={undefined}
             variant="static"
             value={number}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setNumber(event.target.value)
-            }
+            onChange={changeNumber}
             label="Amount Of Questions"
             type="number"
           />
         </div>
+
         {/* Show error message if there's an error */}
         {err && <p className="text-red-500 my-2 font-semibold">{err}</p>}
         <Button

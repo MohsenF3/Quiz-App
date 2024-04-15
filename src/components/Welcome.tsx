@@ -4,14 +4,8 @@ import { useNavigate } from "react-router-dom";
 const Welcome: React.FC = () => {
   const navigate = useNavigate();
 
-  const redirectToSetting = () => {
-    navigate("/setting");
-  };
-
-  // Use useEffect to trigger the redirection after 6s
   useEffect(() => {
-    const timeoutId = setTimeout(redirectToSetting, 6000);
-
+    const timeoutId = setTimeout(() => navigate("/setting"), 6000);
     return () => clearTimeout(timeoutId);
   }, [navigate]);
 

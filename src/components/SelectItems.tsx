@@ -1,7 +1,11 @@
-import { changeCategory, changeDiff, changeType } from "../slices/quizSlice";
+import {
+  changeCategory,
+  changeDiff,
+  changeType,
+} from "../lib/slices/quizSlice";
 import { useAppDispatch } from "../app/hooks";
 import React from "react";
-import { SelectItemsProps } from "../models/quizModels";
+import { SelectItemsProps } from "../lib/models/quizModels";
 import { Option, Select } from "@material-tailwind/react";
 
 const SelectItems: React.FC<SelectItemsProps> = ({ options, label }) => {
